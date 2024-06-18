@@ -40,16 +40,22 @@ def signupuser(request):
 
         else:
             return render(request,'todo/signupuser.html',{'form':UserCreationForm(),'error':'Passwords do not match'})
+        
+@login_required
+def logoutuser(request):
+    if request.method =='POST':
+        logout(request)
+        return redirect('home')
 
 @login_required
 def currenttodos(request):
       todos=Todo.objects.filter(user=request.user,datecompleted__isnull=True)
-      return render(request,'todo/currenttodos.html',{'todo':todos})
+      return render(request,'todo/currenttodos.html',{'todos':todos})
 
 @login_required
 def completedtodos(request):
       todos=Todo.objects.filter(user=request.user,datecompleted__isnull=False).order_by('-datecompleted')
-      return render(request,'todo/completedtodos.html',{'todo':todos}) 
+      return render(request,'todo/completedtodos.html',{'todos':todos}) 
 
 @login_required
 def viewtodo(request,todo_pk):
@@ -64,13 +70,7 @@ def viewtodo(request,todo_pk):
             return redirect('currenttodos')
           except ValueError:
             return render(request,'todo/viewtodo.html',{'todo':todo,'form':TodoForm(),'error':'Bad data passed.Try again'})
-
-
-@login_required
-def logoutuser(request):
-    if request.method =='POST':
-        logout(request)
-        return redirect('home') 
+ 
     
 @login_required
 def createtodo(request):
